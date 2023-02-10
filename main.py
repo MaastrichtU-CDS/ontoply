@@ -18,7 +18,7 @@ if __name__ == '__main__':
     subonto = SubOntology(ontology=ncit, subonto_iri=subonto_iri)
 
     # Extract concept from main ontology and add to sub-ontology
-    concept_label = 'Marital Status'
+    concept_label = 'Outcome'
     subonto.add_concept(concept_label)
 
     # Save sub-ontology extracted
