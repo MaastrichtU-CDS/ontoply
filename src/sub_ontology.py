@@ -49,10 +49,8 @@ class SubOntology:
         ----------
         concept : owlready2 entity
         """
-        parents = list(concept.mro())
+        parent_class = list(concept.mro())[1]  # First item is the concept
         with self.subonto:
-            parent_class = Thing if len(parents) == 2 else \
-                self.subonto[parents[1].name]
             types.new_class(concept.name, (parent_class,))
             self.subonto[concept.name].label = concept.label[0]
 
