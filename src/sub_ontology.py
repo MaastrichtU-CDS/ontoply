@@ -7,7 +7,7 @@ from owlready2 import *
 class SubOntology:
     """ Extract subsets from ontologies
     """
-    def __init__(self, ontology, subonto_iri: str):
+    def __init__(self, ontology: Ontology, subonto_iri: str) -> None:
         """ Initialising class
 
         Parameters
@@ -21,7 +21,7 @@ class SubOntology:
         self.subonto_iri = subonto_iri
         self.subonto = get_ontology(subonto_iri)  # Create empty ontology
 
-    def _add_parents(self, concept):
+    def _add_parents(self, concept: ThingClass) -> None:
         """ Add parent classes of desired concept to sub-ontology
 
         Parameters
@@ -42,7 +42,7 @@ class SubOntology:
                     types.new_class(parent.name, (parent_class,))
                     self.subonto[parent.name].label = parent.label[0]
 
-    def _add_class(self, concept):
+    def _add_class(self, concept: ThingClass) -> None:
         """ Add desired concept to sub-ontology
 
         Parameters
@@ -54,7 +54,7 @@ class SubOntology:
             types.new_class(concept.name, (parent_class,))
             self.subonto[concept.name].label = concept.label[0]
 
-    def _add_children(self, concept):
+    def _add_children(self, concept: ThingClass) -> None:
         """ Add children classes of desired concept to sub-ontology
 
         Parameters
@@ -68,7 +68,7 @@ class SubOntology:
                     types.new_class(child.name, (self.subonto[concept.name],))
                     self.subonto[child.name].label = child.label[0]
 
-    def add_concept(self, concept_label):
+    def add_concept(self, concept_label: str) -> None:
         """ Run steps to add a concept to sub-ontology, which includes adding
         the concept itself, its parent classes, and its children classes
 
@@ -86,7 +86,7 @@ class SubOntology:
         self._add_class(concept)
         self._add_children(concept)
 
-    def add_concepts_list(self, concepts_list: list):
+    def add_concepts_list(self, concepts_list: list) -> None:
         """ Loop through list with concepts and add one-by-one
 
         Parameters
@@ -97,7 +97,7 @@ class SubOntology:
         for concept in concepts_list:
             self.add_concept(concept)
 
-    def save(self, output_file: str, output_format: str):
+    def save(self, output_file: str, output_format: str) -> None:
         """ Save sub-ontology to a file
 
         Parameters
