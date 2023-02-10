@@ -2,7 +2,7 @@
 
 import os
 from owlready2 import *
-from src.sub_ontology import SubOntology
+from ontoply.sub_ontology import SubOntology
 
 
 if __name__ == '__main__':
