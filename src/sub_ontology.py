@@ -29,16 +29,16 @@ class SubOntology:
         concept : owlready2 entity
         """
 
-        # Get parent classes in order, reverse array order, and remove
-        # unnecessary classes
-        parents = list(concept.mro())[::-1][1:-1]
+        # Get parent classes in order, reverse array to start with root class,
+        # and remove unnecessary classes (object, Thing and itself)
+        parents = list(concept.mro())[::-1][2:-1]
 
         # Loop through parent classes to add them
         with self.subonto:
-            if len(parents) > 1:
-                for i, parent in enumerate(parents[1:]):
+            if len(parents) > 0:
+                for i, parent in enumerate(parents):
                     parent_class = Thing if i == 0 else \
-                        self.subonto[parents[i].name]
+                        self.subonto[parents[i-1].name]
                     types.new_class(parent.name, (parent_class,))
                     self.subonto[parent.name].label = parent.label[0]
 
