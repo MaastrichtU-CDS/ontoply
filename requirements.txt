@@ -1,0 +1,2 @@
+Owlready2==0.40
+flake8==6.0.0
