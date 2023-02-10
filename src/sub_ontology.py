@@ -75,7 +75,7 @@ class SubOntology:
         Parameters
         ----------
         concept_label : str
-            Human-recognisable label for the concept
+            Human-readable label for the concept
         """
 
         # Get concept entity searching by its label
@@ -85,6 +85,17 @@ class SubOntology:
         self._add_parents(concept)
         self._add_class(concept)
         self._add_children(concept)
+
+    def add_concepts_list(self, concepts_list: list):
+        """ Loop through list with concepts and add one-by-one
+
+        Parameters
+        ----------
+        concepts_list : list
+            List with human-readable labels for concepts
+        """
+        for concept in concepts_list:
+            self.add_concept(concept)
 
     def save(self, output_file: str, output_format: str):
         """ Save sub-ontology to a file

@@ -21,6 +21,10 @@ if __name__ == '__main__':
     concept_label = 'Outcome'
     subonto.add_concept(concept_label)
 
+    # Extract concepts from main ontology and add to sub-ontology
+    concepts_list = ['Marital Status', 'Bias']
+    subonto.add_concepts_list(concepts_list)
+
     # Save sub-ontology extracted
     output_file = os.path.join(path, 'subonto.owl')
     output_format = 'rdfxml'
