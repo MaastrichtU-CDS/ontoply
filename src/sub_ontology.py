@@ -88,7 +88,7 @@ class SubOntology:
         self._add_class(concept)
         self._add_children(concept)
 
-    def save(self, output_file, output_format):
+    def save(self, output_file: str, output_format: str):
         """ Save sub-ontology to a file
 
         Parameters
