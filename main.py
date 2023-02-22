@@ -18,8 +18,8 @@ if __name__ == '__main__':
     subonto = SubOntology(ontology=ncit, subonto_iri=subonto_iri)
 
     # Extract concept from main ontology and add to sub-ontology
-    concept_label = 'Outcome'
-    subonto.add_concept(concept_label)
+    concept_label = 'Neoplasm by Site'
+    subonto.add_concept(concept_label, True)
 
     # Extract concepts from main ontology and add to sub-ontology
     concepts_list = ['Marital Status', 'Bias']
