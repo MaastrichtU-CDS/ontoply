@@ -54,21 +54,53 @@ class SubOntology:
             types.new_class(concept.name, (parent_class,))
             self.subonto[concept.name].label = concept.label[0]
 
-    def _add_children(self, concept: ThingClass) -> None:
+    def _add_children(
+            self, concept: ThingClass, equivalent_class: bool = False
+    ) -> None:
         """ Add children classes of desired concept to sub-ontology
 
         Parameters
         ----------
         concept : owlready2 entity
+            Parent concept
+        equivalent_class : bool
+            If true add equivalent classes as sub-classes when no children
+            classes are found
         """
         self.children = list(concept.subclasses())
+
+        # If no children entities are found we can look for equivalent
+        # classes and add them as sub-classes
+        if len(self.children) == 0 and equivalent_class:
+            query = '''
+                SELECT DISTINCT ?subClass
+                WHERE {
+                    { 
+                    ?subClass a owl:Class ;
+                        owl:equivalentClass [ 
+                            owl:intersectionOf [ rdf:rest*/rdf:first <%s> ] ] .
+                    }
+                    UNION
+                    {
+                    ?subClass a owl:Class ;
+                        owl:equivalentClass* <%s> .
+                    }
+                    FILTER ( ?subClass NOT IN (<%s>) ) .
+                }
+            ''' % (concept.iri, concept.iri, concept.iri)
+            result = list(default_world.sparql(query))
+            self.children = [item[0] for item in result]
+
+        # Add children subclasses
         with self.subonto:
             if len(self.children) > 0:
                 for child in self.children:
                     types.new_class(child.name, (self.subonto[concept.name],))
                     self.subonto[child.name].label = child.label[0]
 
-    def add_concept(self, concept_label: str) -> None:
+    def add_concept(
+            self, concept_label: str, equivalent_class: bool = False
+    ) -> None:
         """ Run steps to add a concept to sub-ontology, which includes adding
         the concept itself, its parent classes, and its children classes
 
@@ -76,6 +108,9 @@ class SubOntology:
         ----------
         concept_label : str
             Human-readable label for the concept
+        equivalent_class : bool
+            If true add equivalent classes as sub-classes when no children
+            classes are found
         """
 
         # Get concept entity searching by its label
@@ -84,18 +119,23 @@ class SubOntology:
         # Runs steps to add concept
         self._add_parents(concept)
         self._add_class(concept)
-        self._add_children(concept)
+        self._add_children(concept, equivalent_class)
 
-    def add_concepts_list(self, concepts_list: list) -> None:
+    def add_concepts_list(
+            self, concepts_list: list, equivalent_class: bool = False
+    ) -> None:
         """ Loop through list with concepts and add one-by-one
 
         Parameters
         ----------
         concepts_list : list
             List with human-readable labels for concepts
+        equivalent_class : bool
+            If true add equivalent classes as sub-classes when no children
+            classes are found
         """
         for concept in concepts_list:
-            self.add_concept(concept)
+            self.add_concept(concept, equivalent_class)
 
     def save(self, output_file: str, output_format: str) -> None:
         """ Save sub-ontology to a file
