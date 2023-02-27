@@ -59,44 +59,15 @@ class SubOntology:
             types.new_class(concept.name, (parent_class,))
             self.subonto[concept.name].label = concept.label[0]
 
-    def _add_children(
-            self, concept: ThingClass, equivalent_class: bool = False
-    ) -> None:
+    def _add_children(self, concept: ThingClass) -> None:
         """ Add children classes of desired concept to sub-ontology
 
         Parameters
         ----------
         concept : owlready2 entity
             Parent concept
-        equivalent_class : bool
-            If true add equivalent classes as sub-classes when no children
-            classes are found
         """
         self.children = list(concept.subclasses())
-
-        # If no children entities are found we can look for equivalent
-        # classes and add them as sub-classes
-        if len(self.children) == 0 and equivalent_class:
-            query = '''
-                SELECT DISTINCT ?subClass
-                WHERE {
-                    { 
-                    ?subClass a owl:Class ;
-                        owl:equivalentClass [ 
-                            owl:intersectionOf [ rdf:rest*/rdf:first <%s> ] ] .
-                    }
-                    UNION
-                    {
-                    ?subClass a owl:Class ;
-                        owl:equivalentClass* <%s> .
-                    }
-                    FILTER ( ?subClass NOT IN (<%s>) ) .
-                }
-            ''' % (concept.iri, concept.iri, concept.iri)
-            result = list(default_world.sparql(query))
-            self.children = [item[0] for item in result]
-
-        # Add children subclasses
         with self.subonto:
             if len(self.children) > 0:
                 for child in self.children:
