@@ -17,9 +17,10 @@ if __name__ == '__main__':
     subonto_iri = 'http://test.org/onto.owl'
     subonto = SubOntology(ontology=ncit, subonto_iri=subonto_iri)
 
-    # Extract concept from main ontology and add to sub-ontology
-    concept_label = 'Neoplasm by Site'
-    subonto.add_concept(concept_label, True)
+    # Extract concept from main ontology and add to sub-ontology,
+    # do not add children classes
+    concept_label = 'Outcome'
+    subonto.add_concept(concept_label, children=False)
 
     # Extract concepts from main ontology and add to sub-ontology
     concepts_list = ['Marital Status', 'Bias']
