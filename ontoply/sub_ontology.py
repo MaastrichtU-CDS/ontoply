@@ -42,14 +42,19 @@ class SubOntology:
                     types.new_class(parent.name, (parent_class,))
                     self.subonto[parent.name].label = parent.label[0]
 
-    def _add_class(self, concept: ThingClass) -> None:
+    def _add_class(self, concept: ThingClass, parents: bool = True) -> None:
         """ Add desired concept to sub-ontology
 
         Parameters
         ----------
         concept : owlready2 entity
+        parents : bool
+            Whether parent classes were added to chain, default to True
         """
-        parent_class = list(concept.mro())[1]  # First item is the concept
+        if parents:
+            parent_class = list(concept.mro())[1]  # First item is the concept
+        else:
+            parent_class = Thing
         with self.subonto:
             types.new_class(concept.name, (parent_class,))
             self.subonto[concept.name].label = concept.label[0]
@@ -68,7 +73,10 @@ class SubOntology:
                     types.new_class(child.name, (self.subonto[concept.name],))
                     self.subonto[child.name].label = child.label[0]
 
-    def add_concept(self, concept_label: str) -> None:
+    def add_concept(
+            self, concept_label: str,
+            parents: bool = True, children: bool = True
+    ) -> None:
         """ Run steps to add a concept to sub-ontology, which includes adding
         the concept itself, its parent classes, and its children classes
 
@@ -76,26 +84,39 @@ class SubOntology:
         ----------
         concept_label : str
             Human-readable label for the concept
+        parents : bool
+            Whether to add parent classes, default to True
+        children : bool
+            Whether to add children classes, default to True
         """
 
         # Get concept entity searching by its label
         concept = self.ontology.search(label=concept_label)[0]
 
         # Runs steps to add concept
-        self._add_parents(concept)
-        self._add_class(concept)
-        self._add_children(concept)
+        if parents:
+            self._add_parents(concept)
+        self._add_class(concept, parents)
+        if children:
+            self._add_children(concept)
 
-    def add_concepts_list(self, concepts_list: list) -> None:
+    def add_concepts_list(
+            self, concepts_list: list,
+            parents: bool = True, children: bool = True
+    ) -> None:
         """ Loop through list with concepts and add one-by-one
 
         Parameters
         ----------
         concepts_list : list
             List with human-readable labels for concepts
+        parents : bool
+            Whether to add parent classes, default to True
+        children : bool
+            Whether to add children classes, default to True
         """
         for concept in concepts_list:
-            self.add_concept(concept)
+            self.add_concept(concept, parents, children)
 
     def save(self, output_file: str, output_format: str) -> None:
         """ Save sub-ontology to a file
